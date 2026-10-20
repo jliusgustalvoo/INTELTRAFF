@@ -119,7 +119,7 @@ menu = st.sidebar.radio("Pilih Layar (Screen):", [
     "5. Pengaturan Sistem"
 ])
 st.sidebar.divider()
-st.sidebar.caption("Simulasi PKM-KC / LITERA 2026")
+st.sidebar.caption("INTELTRAFF")
 
 if menu == "1. Dashboard Utama":
     # Menambahkan Background Image dengan pemanggil yang lebih kuat (data-testid)
