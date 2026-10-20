@@ -1,15 +1,74 @@
 import streamlit as st
 import pandas as pd
+import base64
+import os
 
 # Konfigurasi Halaman Dasar
 st.set_page_config(page_title="INTELTRAFF - 5 Screen", page_icon="🚦", layout="wide")
 
-# Custom CSS untuk mempercantik tampilan visual
+# Custom CSS Premium & Animasi
 st.markdown("""
 <style>
-    .status-badge-hijau { background-color: #10B981; color: white; padding: 5px 15px; border-radius: 20px; font-weight: bold; }
-    .status-badge-merah { background-color: #EF4444; color: white; padding: 5px 15px; border-radius: 20px; font-weight: bold; }
-    .kartu-jalur { background-color: #1e222a; padding: 20px; border-radius: 12px; text-align: center; margin-bottom: 15px;}
+    /* Desain Glassmorphism untuk Kartu Jalur */
+    .glass-card {
+        background: rgba(15, 23, 42, 0.65);
+        backdrop-filter: blur(12px);
+        -webkit-backdrop-filter: blur(12px);
+        border: 1px solid rgba(255, 255, 255, 0.1);
+        border-radius: 20px;
+        padding: 30px 20px;
+        box-shadow: 0 8px 32px 0 rgba(0, 0, 0, 0.3);
+        text-align: center;
+        margin-bottom: 20px;
+        transition: all 0.3s ease;
+    }
+    .glass-card:hover { transform: translateY(-5px); border-color: rgba(255, 255, 255, 0.3); }
+    
+    /* Indikator Menyala (Glowing Pulse) */
+    .badge-glowing-green {
+        background: rgba(16, 185, 129, 0.15);
+        color: #10B981;
+        border: 1px solid #10B981;
+        box-shadow: 0 0 15px rgba(16, 185, 129, 0.5);
+        padding: 8px 25px;
+        border-radius: 30px;
+        font-weight: 700;
+        letter-spacing: 1.5px;
+        font-size: 0.85em;
+        text-transform: uppercase;
+        animation: pulse-green 2s infinite;
+        display: inline-block;
+        margin-bottom: 20px;
+    }
+    @keyframes pulse-green {
+        0% { box-shadow: 0 0 0 0 rgba(16, 185, 129, 0.7); }
+        70% { box-shadow: 0 0 0 12px rgba(16, 185, 129, 0); }
+        100% { box-shadow: 0 0 0 0 rgba(16, 185, 129, 0); }
+    }
+    
+    /* Indikator Merah Elegan (Standby) */
+    .badge-red {
+        background: rgba(239, 68, 68, 0.05);
+        color: #EF4444;
+        border: 1px solid rgba(239, 68, 68, 0.3);
+        padding: 8px 25px;
+        border-radius: 30px;
+        font-weight: 600;
+        letter-spacing: 1.5px;
+        font-size: 0.85em;
+        text-transform: uppercase;
+        display: inline-block;
+        margin-bottom: 20px;
+    }
+    
+    /* Tipografi Premium */
+    .waktu-teks { font-size: 3.5rem; font-weight: 800; color: #ffffff; margin: 5px 0; line-height: 1; text-shadow: 0 2px 10px rgba(0,0,0,0.5); }
+    .label-teks { font-size: 0.85rem; color: #94a3b8; text-transform: uppercase; letter-spacing: 1.5px; font-weight: 600; }
+    .antrean-teks { font-size: 1.1rem; color: #cbd5e1; margin-top: 15px; font-weight: 500; }
+    .highlight-antrean { color: #FBBF24; font-weight: 800; font-size: 1.2rem; }
+    
+    /* Mempercantik Judul Jalur */
+    .jalur-title { font-size: 1.3rem; color: #38BDF8; font-weight: 800; letter-spacing: 2px; text-transform: uppercase; margin-bottom: 15px; }
 </style>
 """, unsafe_allow_html=True)
 
@@ -60,35 +119,64 @@ menu = st.sidebar.radio("Pilih Layar (Screen):", [
     "5. Pengaturan Sistem"
 ])
 st.sidebar.divider()
-st.sidebar.caption("Simulasi INTELTRAFF - Sistem Kendali Lampu Lalu Lintas Cerdas Berbasis Vision AI & Logika Fuzzy")
+st.sidebar.caption("Simulasi PKM-KC / LITERA 2026")
 
 if menu == "1. Dashboard Utama":
-    st.title("🖥️ Screen 1: Dashboard Kendali Utama")
-    st.write("Pemantauan visual persimpangan lalu lintas secara _real-time_.")
-    
-    col_u_kosong, col_u, col_u_kosong2 = st.columns([1,2,1])
-    with col_u:
-        status_u = "🟢 HIJAU AKTIF" if jalur_prioritas == "UTARA" else "🔴 MERAH"
-        css_class = "status-badge-hijau" if jalur_prioritas == "UTARA" else "status-badge-merah"
-        st.markdown(f'<div class="kartu-jalur" style="border-top: 5px solid #3b82f6;"><h3>⬆️ UTARA</h3><p><span class="{css_class}">{status_u}</span></p><h2>⏱️ {waktu_hijau["UTARA"]} Detik</h2><p>Antrean: {st.session_state.utara} 🚗</p></div>', unsafe_allow_html=True)
-        
-    col_b, col_tengah, col_t = st.columns([2,1,2])
-    with col_b:
-        status_b = "🟢 HIJAU AKTIF" if jalur_prioritas == "BARAT" else "🔴 MERAH"
-        css_class = "status-badge-hijau" if jalur_prioritas == "BARAT" else "status-badge-merah"
-        st.markdown(f'<div class="kartu-jalur" style="border-left: 5px solid #3b82f6;"><h3>⬅️ BARAT</h3><p><span class="{css_class}">{status_b}</span></p><h2>⏱️ {waktu_hijau["BARAT"]} Detik</h2><p>Antrean: {st.session_state.barat} 🚗</p></div>', unsafe_allow_html=True)
-    with col_tengah:
-        st.markdown('<div style="text-align:center; padding-top:40px;"><h2>🚥</h2><p><b>INTELTRAFF CORE</b></p></div>', unsafe_allow_html=True)
-    with col_t:
-        status_t = "🟢 HIJAU AKTIF" if jalur_prioritas == "TIMUR" else "🔴 MERAH"
-        css_class = "status-badge-hijau" if jalur_prioritas == "TIMUR" else "status-badge-merah"
-        st.markdown(f'<div class="kartu-jalur" style="border-right: 5px solid #3b82f6;"><h3>➡️ TIMUR</h3><p><span class="{css_class}">{status_t}</span></p><h2>⏱️ {waktu_hijau["TIMUR"]} Detik</h2><p>Antrean: {st.session_state.timur} 🚗</p></div>', unsafe_allow_html=True)
+    # Menambahkan Background Image dengan pemanggil yang lebih kuat (data-testid)
+    try:
+        with open("Gemini_Generated_Image_208wzs208wzs208w.jfif", "rb") as f:
+            data = f.read()
+        b64 = base64.b64encode(data).decode()
+        st.markdown(
+            f"""
+            <style>
+            [data-testid="stAppViewContainer"] {{
+                background-image: linear-gradient(rgba(15, 23, 42, 0.65), rgba(15, 23, 42, 0.85)), url("data:image/jpeg;base64,{b64}");
+                background-size: cover;
+                background-position: center;
+                background-attachment: fixed;
+            }}
+            </style>
+            """,
+            unsafe_allow_html=True
+        )
+    except FileNotFoundError:
+        st.error("⚠️ File gambar 'Gemini_Generated_Image_208wzs208wzs208w.jfif' tidak ditemukan di folder yang sama dengan app.py")
 
-    col_s_kosong, col_s, col_s_kosong2 = st.columns([1,2,1])
+    st.markdown('<h1 style="text-align: center; font-weight: 900; color: white; letter-spacing: 2px; margin-bottom: 0px; text-shadow: 0px 4px 15px rgba(0,0,0,0.6);">🌍 INTELTRAFF CORE</h1>', unsafe_allow_html=True)
+    st.markdown('<p style="text-align: center; color: #38bdf8; font-size: 1.1rem; font-weight: 600; letter-spacing: 1px; margin-bottom: 40px;">Live AI Traffic Density Control Center</p>', unsafe_allow_html=True)
+    
+    # Fungsi pembantu untuk membuat Kartu Kaca (Glass Card) agar kode lebih rapi
+    def render_card(jalur, is_prioritas, waktu, antrean):
+        status = "🟢 ACTIVE" if is_prioritas else "🔴 STANDBY"
+        badge_class = "badge-glowing-green" if is_prioritas else "badge-red"
+        border_color = "#10B981" if is_prioritas else "rgba(255,255,255,0.1)"
+        
+        return f'''
+        <div class="glass-card" style="border-top: 5px solid {border_color};">
+            <div class="jalur-title">{jalur}</div>
+            <div class="{badge_class}">{status}</div>
+            <div class="label-teks">Durasi Lampu Hijau</div>
+            <div class="waktu-teks">{waktu}s</div>
+            <div class="antrean-teks">Antrean Kendaraan: <span class="highlight-antrean">{antrean}</span> 🚗</div>
+        </div>
+        '''
+        
+    col_u_kosong, col_u, col_u_kosong2 = st.columns([1, 1.5, 1])
+    with col_u:
+        st.markdown(render_card("Jalur Utara", jalur_prioritas == "UTARA", waktu_hijau["UTARA"], st.session_state.utara), unsafe_allow_html=True)
+        
+    col_b, col_tengah, col_t = st.columns([1.5, 0.5, 1.5])
+    with col_b:
+        st.markdown(render_card("Jalur Barat", jalur_prioritas == "BARAT", waktu_hijau["BARAT"], st.session_state.barat), unsafe_allow_html=True)
+    with col_tengah:
+        st.markdown('<div style="text-align:center; padding-top:80px; opacity: 0.3;"><h1 style="font-size: 5rem; margin:0; color:white;">+</h1></div>', unsafe_allow_html=True)
+    with col_t:
+        st.markdown(render_card("Jalur Timur", jalur_prioritas == "TIMUR", waktu_hijau["TIMUR"], st.session_state.timur), unsafe_allow_html=True)
+
+    col_s_kosong, col_s, col_s_kosong2 = st.columns([1, 1.5, 1])
     with col_s:
-        status_s = "🟢 HIJAU AKTIF" if jalur_prioritas == "SELATAN" else "🔴 MERAH"
-        css_class = "status-badge-hijau" if jalur_prioritas == "SELATAN" else "status-badge-merah"
-        st.markdown(f'<div class="kartu-jalur" style="border-bottom: 5px solid #3b82f6;"><h3>⬇️ SELATAN</h3><p><span class="{css_class}">{status_s}</span></p><h2>⏱️ {waktu_hijau["SELATAN"]} Detik</h2><p>Antrean: {st.session_state.selatan} 🚗</p></div>', unsafe_allow_html=True)
+        st.markdown(render_card("Jalur Selatan", jalur_prioritas == "SELATAN", waktu_hijau["SELATAN"], st.session_state.selatan), unsafe_allow_html=True)
 
 elif menu == "2. Panel Input Kamera":
     st.title("📷 Screen 2: Simulator Vision AI")
