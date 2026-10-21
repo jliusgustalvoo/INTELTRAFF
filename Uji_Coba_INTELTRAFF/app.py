@@ -189,49 +189,82 @@ elif menu == "2. Panel Input Kamera":
             <style>
             /* Gradien dari kiri (gelap) ke kanan (bening) agar tiang lampu di kanan tetap terlihat */
             [data-testid="stAppViewContainer"] {{
-                background-image: linear-gradient(to right, rgba(15, 23, 42, 0.95) 20%, rgba(15, 23, 42, 0.4) 100%), url("data:image/jpeg;base64,{b64_2}");
+                background-image: linear-gradient(to right, rgba(15, 23, 42, 0.95) 20%, rgba(15, 23, 42, 0.3) 100%), url("data:image/jpeg;base64,{b64_2}");
                 background-size: cover;
                 background-position: center;
                 background-attachment: fixed;
             }}
             
-            /* Customisasi Slider agar lebih besar, tebal, dan premium (Glowing) */
+            /* 1. KOTAK MODUL SLIDER (Membungkus Slider agar rapi) */
+            div.stSlider {{
+                background: linear-gradient(145deg, rgba(30, 41, 59, 0.85), rgba(15, 23, 42, 0.95));
+                padding: 25px 25px 20px 25px;
+                border-radius: 0 16px 16px 16px;
+                border: 1px solid rgba(56, 189, 248, 0.2);
+                box-shadow: 0 10px 30px rgba(0, 0, 0, 0.5);
+                margin-top: -5px; /* Menempel dengan label tab di atasnya */
+                margin-bottom: 25px;
+            }}
+
+            /* 2. JALUR SLIDER (Track) */
             div.stSlider > div[data-baseweb="slider"] > div > div {{
-                height: 12px !important; /* Jalur slider lebih tebal */
+                height: 10px !important; 
+                background-color: rgba(255, 255, 255, 0.08) !important;
                 border-radius: 10px;
+                box-shadow: inset 0 2px 5px rgba(0,0,0,0.5) !important;
             }}
+
+            /* 3. TOMBOL GESER (Thumb) bergaya Kenop Canggih */
             div.stSlider > div[data-baseweb="slider"] > div > div > div[role="slider"] {{
-                height: 26px !important; 
-                width: 26px !important; 
-                background-color: #38bdf8 !important; /* Warna biru cyan */
-                border: 3px solid #ffffff !important;
-                box-shadow: 0 0 15px rgba(56, 189, 248, 0.8) !important; /* Efek neon/menyala */
+                height: 28px !important; 
+                width: 28px !important; 
+                background: radial-gradient(circle, #38bdf8 30%, #0284c7 100%) !important; 
+                border: 2px solid #e0f2fe !important;
+                box-shadow: 0 0 15px rgba(56, 189, 248, 0.6), inset 0 0 5px rgba(255, 255, 255, 0.9) !important; 
                 cursor: grab;
+                transition: transform 0.15s ease, box-shadow 0.15s ease;
             }}
+            /* Efek saat cursor di atas tombol */
+            div.stSlider > div[data-baseweb="slider"] > div > div > div[role="slider"]:hover {{
+                transform: scale(1.15);
+                box-shadow: 0 0 25px rgba(56, 189, 248, 0.9) !important; 
+            }}
+            /* Efek saat tombol ditarik */
             div.stSlider > div[data-baseweb="slider"] > div > div > div[role="slider"]:active {{
                 cursor: grabbing;
-                box-shadow: 0 0 25px rgba(56, 189, 248, 1) !important; /* Nyala lebih terang saat ditarik */
+                transform: scale(0.95);
+                box-shadow: 0 0 35px rgba(56, 189, 248, 1) !important; 
             }}
             
-            /* Mempercantik kotak angka nilai (Value Box) saat digeser */
+            /* 4. ANGKA POP-UP (LED Display Style) */
             div[data-testid="stThumbValue"] {{
-                font-size: 1.1rem !important;
-                font-weight: 800 !important;
-                color: #10B981 !important; 
-                background: rgba(15, 23, 42, 0.8) !important;
-                padding: 4px 10px !important;
+                font-family: 'Courier New', Courier, monospace !important;
+                font-size: 1.2rem !important;
+                font-weight: 900 !important;
+                color: #0f172a !important; 
+                background: #38bdf8 !important;
+                padding: 6px 14px !important;
                 border-radius: 8px !important;
-                border: 1px solid #10B981 !important;
+                box-shadow: 0 5px 15px rgba(56, 189, 248, 0.4) !important;
+                border: none !important;
+                margin-bottom: 8px !important;
             }}
             
-            /* Tipografi Judul Label Custom */
+            /* 5. TAB LABEL CUSTOM */
             .slider-label-custom {{
-                font-size: 1.2rem;
-                font-weight: 700;
-                color: #f1f5f9;
-                margin-bottom: -15px;
-                letter-spacing: 1.5px;
+                font-size: 0.9rem;
+                font-weight: 800;
+                color: #38bdf8;
+                background: linear-gradient(145deg, rgba(30, 41, 59, 0.9), rgba(15, 23, 42, 1));
+                padding: 10px 25px;
+                border-radius: 12px 12px 0 0;
+                margin-bottom: 0px;
+                letter-spacing: 2px;
                 text-transform: uppercase;
+                border: 1px solid rgba(56, 189, 248, 0.2);
+                border-bottom: none;
+                display: inline-block;
+                box-shadow: 0 -5px 15px rgba(0,0,0,0.2);
             }}
             </style>
             """,
@@ -241,34 +274,28 @@ elif menu == "2. Panel Input Kamera":
         st.error("⚠️ File gambar 'Gemini_Generated_Image_c7d3v3c7d3v3c7d3.jfif' tidak ditemukan di folder yang sama.")
 
     st.markdown('<h1 style="color: white; text-shadow: 0 2px 10px rgba(0,0,0,0.5);">📷 Panel Input Kamera (Vision Layer)</h1>', unsafe_allow_html=True)
-    st.markdown('<p style="color: #94a3b8; font-size: 1.1rem; margin-bottom: 40px; border-bottom: 1px solid rgba(255,255,255,0.1); padding-bottom: 15px;">Halaman ini menyimulasikan data kepadatan (0-100 kendaraan) yang dikirim dari sistem Vision AI lapangan ke <i>Control Center</i>.</p>', unsafe_allow_html=True)
+    st.markdown('<p style="color: #94a3b8; font-size: 1.1rem; margin-bottom: 30px; border-bottom: 1px solid rgba(255,255,255,0.1); padding-bottom: 15px;">Simulasi pengiriman data kepadatan kendaraan (0-100) dari CCTV pintar lapangan ke <i>Control Center</i>.</p>', unsafe_allow_html=True)
     
-    # Membuat layout agar slider terfokus di kiri dan tengah, membiarkan gambar kanan terlihat
     col1, col_gap, col2, col_kosong = st.columns([1, 0.1, 1, 0.5])
     
     with col1:
-        st.markdown('<p class="slider-label-custom">🚙 Kepadatan Utara</p>', unsafe_allow_html=True)
-        # label_visibility="collapsed" menyembunyikan label bawaan yang kecil
+        st.markdown('<div class="slider-label-custom">🚙 FEED KAMERA UTARA</div>', unsafe_allow_html=True)
         st.session_state.utara = st.slider("Utara", 0, 100, st.session_state.utara, key="s_u", label_visibility="collapsed")
         
-        st.write("") # Spasi
-        st.write("")
-        st.markdown('<p class="slider-label-custom">🚙 Kepadatan Barat</p>', unsafe_allow_html=True)
+        st.markdown('<div class="slider-label-custom">🚙 FEED KAMERA BARAT</div>', unsafe_allow_html=True)
         st.session_state.barat = st.slider("Barat", 0, 100, st.session_state.barat, key="s_b", label_visibility="collapsed")
         
     with col2:
-        st.markdown('<p class="slider-label-custom">🚙 Kepadatan Selatan</p>', unsafe_allow_html=True)
+        st.markdown('<div class="slider-label-custom">🚙 FEED KAMERA SELATAN</div>', unsafe_allow_html=True)
         st.session_state.selatan = st.slider("Selatan", 0, 100, st.session_state.selatan, key="s_s", label_visibility="collapsed")
         
-        st.write("")
-        st.write("")
-        st.markdown('<p class="slider-label-custom">🚙 Kepadatan Timur</p>', unsafe_allow_html=True)
+        st.markdown('<div class="slider-label-custom">🚙 FEED KAMERA TIMUR</div>', unsafe_allow_html=True)
         st.session_state.timur = st.slider("Timur", 0, 100, st.session_state.timur, key="s_t", label_visibility="collapsed")
     
     st.markdown("""
-    <div style="background: rgba(16, 185, 129, 0.1); border-left: 4px solid #10B981; padding: 15px; border-radius: 8px; margin-top: 50px; backdrop-filter: blur(5px);">
-        <span style="color: #10B981; font-weight: bold; letter-spacing: 1px;">💡 INFO SISTEM:</span> 
-        <span style="color: #cbd5e1; margin-left: 10px;">Setelah mengatur simulasi kepadatan di sini, silakan kembali ke menu <b>1. Dashboard Utama</b> untuk melihat algoritma INTELTRAFF mengambil keputusan pembagian lampu hijau secara <i>real-time</i>.</span>
+    <div style="background: rgba(56, 189, 248, 0.1); border-left: 4px solid #38bdf8; padding: 15px; border-radius: 8px; margin-top: 30px; backdrop-filter: blur(5px);">
+        <span style="color: #38bdf8; font-weight: bold; letter-spacing: 1px;">💡 SISTEM AKTIF:</span> 
+        <span style="color: #cbd5e1; margin-left: 10px;">Perubahan data pada panel ini akan langsung ditransmisikan dan diproses oleh algoritma Fuzzy di <b>1. Dashboard Utama</b>.</span>
     </div>
     """, unsafe_allow_html=True)
 
