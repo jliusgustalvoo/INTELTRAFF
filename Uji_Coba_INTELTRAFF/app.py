@@ -119,7 +119,7 @@ menu = st.sidebar.radio("Pilih Layar (Screen):", [
     "5. Pengaturan Sistem"
 ])
 st.sidebar.divider()
-st.sidebar.caption("INTELTRAFF")
+st.sidebar.caption("Simulasi PKM-KC / LITERA 2026")
 
 if menu == "1. Dashboard Utama":
     # Menambahkan Background Image dengan pemanggil yang lebih kuat (data-testid)
@@ -179,18 +179,98 @@ if menu == "1. Dashboard Utama":
         st.markdown(render_card("Jalur Selatan", jalur_prioritas == "SELATAN", waktu_hijau["SELATAN"], st.session_state.selatan), unsafe_allow_html=True)
 
 elif menu == "2. Panel Input Kamera":
-    st.title("📷 Screen 2: Simulator Vision AI")
-    st.write("Halaman ini menyimulasikan data yang masuk dari kamera pendeteksi kendaraan (Vision Layer).")
+    # Menyiapkan Background Khusus Screen 2
+    try:
+        with open("Gemini_Generated_Image_c7d3v3c7d3v3c7d3.jfif", "rb") as f:
+            data2 = f.read()
+        b64_2 = base64.b64encode(data2).decode()
+        st.markdown(
+            f"""
+            <style>
+            /* Gradien dari kiri (gelap) ke kanan (bening) agar tiang lampu di kanan tetap terlihat */
+            [data-testid="stAppViewContainer"] {{
+                background-image: linear-gradient(to right, rgba(15, 23, 42, 0.95) 20%, rgba(15, 23, 42, 0.4) 100%), url("data:image/jpeg;base64,{b64_2}");
+                background-size: cover;
+                background-position: center;
+                background-attachment: fixed;
+            }}
+            
+            /* Customisasi Slider agar lebih besar, tebal, dan premium (Glowing) */
+            div.stSlider > div[data-baseweb="slider"] > div > div {{
+                height: 12px !important; /* Jalur slider lebih tebal */
+                border-radius: 10px;
+            }}
+            div.stSlider > div[data-baseweb="slider"] > div > div > div[role="slider"] {{
+                height: 26px !important; 
+                width: 26px !important; 
+                background-color: #38bdf8 !important; /* Warna biru cyan */
+                border: 3px solid #ffffff !important;
+                box-shadow: 0 0 15px rgba(56, 189, 248, 0.8) !important; /* Efek neon/menyala */
+                cursor: grab;
+            }}
+            div.stSlider > div[data-baseweb="slider"] > div > div > div[role="slider"]:active {{
+                cursor: grabbing;
+                box-shadow: 0 0 25px rgba(56, 189, 248, 1) !important; /* Nyala lebih terang saat ditarik */
+            }}
+            
+            /* Mempercantik kotak angka nilai (Value Box) saat digeser */
+            div[data-testid="stThumbValue"] {{
+                font-size: 1.1rem !important;
+                font-weight: 800 !important;
+                color: #10B981 !important; 
+                background: rgba(15, 23, 42, 0.8) !important;
+                padding: 4px 10px !important;
+                border-radius: 8px !important;
+                border: 1px solid #10B981 !important;
+            }}
+            
+            /* Tipografi Judul Label Custom */
+            .slider-label-custom {{
+                font-size: 1.2rem;
+                font-weight: 700;
+                color: #f1f5f9;
+                margin-bottom: -15px;
+                letter-spacing: 1.5px;
+                text-transform: uppercase;
+            }}
+            </style>
+            """,
+            unsafe_allow_html=True
+        )
+    except FileNotFoundError:
+        st.error("⚠️ File gambar 'Gemini_Generated_Image_c7d3v3c7d3v3c7d3.jfif' tidak ditemukan di folder yang sama.")
+
+    st.markdown('<h1 style="color: white; text-shadow: 0 2px 10px rgba(0,0,0,0.5);">📷 Panel Input Kamera (Vision Layer)</h1>', unsafe_allow_html=True)
+    st.markdown('<p style="color: #94a3b8; font-size: 1.1rem; margin-bottom: 40px; border-bottom: 1px solid rgba(255,255,255,0.1); padding-bottom: 15px;">Halaman ini menyimulasikan data kepadatan (0-100 kendaraan) yang dikirim dari sistem Vision AI lapangan ke <i>Control Center</i>.</p>', unsafe_allow_html=True)
     
-    col1, col2 = st.columns(2)
+    # Membuat layout agar slider terfokus di kiri dan tengah, membiarkan gambar kanan terlihat
+    col1, col_gap, col2, col_kosong = st.columns([1, 0.1, 1, 0.5])
+    
     with col1:
-        st.session_state.utara = st.slider("🚗 Kendaraan Jalur UTARA", 0, 100, st.session_state.utara)
-        st.session_state.barat = st.slider("🚗 Kendaraan Jalur BARAT", 0, 100, st.session_state.barat)
+        st.markdown('<p class="slider-label-custom">🚙 Kepadatan Utara</p>', unsafe_allow_html=True)
+        # label_visibility="collapsed" menyembunyikan label bawaan yang kecil
+        st.session_state.utara = st.slider("Utara", 0, 100, st.session_state.utara, key="s_u", label_visibility="collapsed")
+        
+        st.write("") # Spasi
+        st.write("")
+        st.markdown('<p class="slider-label-custom">🚙 Kepadatan Barat</p>', unsafe_allow_html=True)
+        st.session_state.barat = st.slider("Barat", 0, 100, st.session_state.barat, key="s_b", label_visibility="collapsed")
+        
     with col2:
-        st.session_state.selatan = st.slider("🚗 Kendaraan Jalur SELATAN", 0, 100, st.session_state.selatan)
-        st.session_state.timur = st.slider("🚗 Kendaraan Jalur TIMUR", 0, 100, st.session_state.timur)
+        st.markdown('<p class="slider-label-custom">🚙 Kepadatan Selatan</p>', unsafe_allow_html=True)
+        st.session_state.selatan = st.slider("Selatan", 0, 100, st.session_state.selatan, key="s_s", label_visibility="collapsed")
+        
+        st.write("")
+        st.write("")
+        st.markdown('<p class="slider-label-custom">🚙 Kepadatan Timur</p>', unsafe_allow_html=True)
+        st.session_state.timur = st.slider("Timur", 0, 100, st.session_state.timur, key="s_t", label_visibility="collapsed")
     
-    st.info("💡 Setelah mengubah nilai di sini, silakan kembali ke **1. Dashboard Utama** untuk melihat perubahan lampu secara instan.")
+    st.markdown("""
+    <div style="background: rgba(16, 185, 129, 0.1); border-left: 4px solid #10B981; padding: 15px; border-radius: 8px; margin-top: 50px; backdrop-filter: blur(5px);">
+        <span style="color: #10B981; font-weight: bold; letter-spacing: 1px;">💡 INFO SISTEM:</span> 
+        <span style="color: #cbd5e1; margin-left: 10px;">Setelah mengatur simulasi kepadatan di sini, silakan kembali ke menu <b>1. Dashboard Utama</b> untuk melihat algoritma INTELTRAFF mengambil keputusan pembagian lampu hijau secara <i>real-time</i>.</span>
+    </div>
+    """, unsafe_allow_html=True)
 
 elif menu == "3. Analisis Logika (TDS)":
     st.title("🧠 Screen 3: Decision Layer (Logika Pengambilan Keputusan)")
