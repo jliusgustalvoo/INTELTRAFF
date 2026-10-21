@@ -515,10 +515,88 @@ elif menu == "4. Perbandingan Kinerja":
             ''', unsafe_allow_html=True)
 
 elif menu == "5. Pengaturan Sistem":
-    st.title("⚙️ Screen 5: Konfigurasi Parameter")
-    st.write("Pengaturan batas keselamatan untuk mencegah durasi lampu yang tidak masuk akal.")
+    try:
+        with open("Gemini_Generated_Image_ihrd8qihrd8qihrd_2.jfif", "rb") as f:
+            data5 = f.read()
+        b64_5 = base64.b64encode(data5).decode()
+        st.markdown(
+            f"""
+            <style>
+            /* Latar belakang dengan gradasi gelap agar teks dan panel penutup terlihat mewah */
+            [data-testid="stAppViewContainer"] {{
+                background-image: linear-gradient(to right, rgba(15, 23, 42, 0.95) 40%, rgba(15, 23, 42, 0.5) 100%), url("data:image/jpeg;base64,{b64_5}");
+                background-size: cover;
+                background-position: center;
+                background-attachment: fixed;
+            }}
+            
+            /* Kustomisasi Input Angka (Number Input) */
+            .stNumberInput > div > div > input {{
+                color: #ffffff !important;
+                background-color: rgba(30, 41, 59, 0.8) !important;
+                border: 1px solid #38bdf8 !important;
+                border-radius: 8px !important;
+                font-size: 1.1rem !important;
+            }}
+            .stNumberInput label {{
+                color: #cbd5e1 !important;
+                font-weight: 600 !important;
+                letter-spacing: 1px !important;
+            }}
+            
+            /* Panel Penutup (Closing Statement Card) */
+            .closing-panel {{
+                background: linear-gradient(135deg, rgba(30, 41, 59, 0.85), rgba(15, 23, 42, 0.95));
+                border-left: 5px solid #F59E0B;
+                border-radius: 12px;
+                padding: 30px;
+                box-shadow: 0 10px 30px rgba(0, 0, 0, 0.6);
+                backdrop-filter: blur(12px);
+                margin-top: 40px;
+                color: #e2e8f0;
+                border-top: 1px solid rgba(255,255,255,0.05);
+            }}
+            .closing-title {{
+                color: #F59E0B;
+                font-size: 1.4rem;
+                font-weight: 800;
+                margin-bottom: 20px;
+                letter-spacing: 1.5px;
+                text-transform: uppercase;
+                border-bottom: 1px solid rgba(245, 158, 11, 0.3);
+                padding-bottom: 10px;
+            }}
+            </style>
+            """,
+            unsafe_allow_html=True
+        )
+    except FileNotFoundError:
+        st.error("⚠️ File gambar 'Gemini_Generated_Image_ihrd8qihrd8qihrd_2.jfif' tidak ditemukan.")
+
+    st.markdown('<h1 style="color: white; text-shadow: 0 2px 10px rgba(0,0,0,0.5);">⚙️ Konfigurasi Keselamatan & Visi</h1>', unsafe_allow_html=True)
+    st.markdown('<p style="color: #94a3b8; font-size: 1.1rem; margin-bottom: 30px; border-bottom: 1px solid rgba(255,255,255,0.1); padding-bottom: 15px;">Pengaturan batas aman <i>(Safety Constraints)</i> untuk mencegah durasi lampu hijau yang terlalu singkat atau terlalu lama.</p>', unsafe_allow_html=True)
     
-    st.session_state.min_hijau = st.number_input("Batas Minimum Lampu Hijau (Detik) - Jalur Sepi", min_value=5, max_value=30, value=st.session_state.min_hijau)
-    st.session_state.max_hijau = st.number_input("Batas Maksimum Lampu Hijau (Detik) - Jalur Macet Total", min_value=45, max_value=120, value=st.session_state.max_hijau)
+    col_set1, col_set_gap, col_set2 = st.columns([1, 0.1, 1])
     
-    st.info("Data ini akan langsung memperbarui kalkulasi di layar Analisis Logika.")
+    with col_set1:
+        st.session_state.min_hijau = st.number_input("Batas Minimum Lampu Hijau (Detik) - Jalur Sepi", min_value=5, max_value=30, value=st.session_state.min_hijau)
+    with col_set2:
+        st.session_state.max_hijau = st.number_input("Batas Maksimum Lampu Hijau (Detik) - Jalur Macet Total", min_value=45, max_value=120, value=st.session_state.max_hijau)
+        
+    st.markdown('''
+    <div style="background: rgba(56, 189, 248, 0.1); border-left: 4px solid #38bdf8; padding: 15px; border-radius: 8px; color: #cbd5e1; font-size: 0.95rem; margin-top: 10px;">
+        <span style="color: #38bdf8; font-weight: bold;">💡 Info Real-Time:</span> Data parameter ini terhubung langsung dengan Otak Sistem di <b>Screen 3 (Analisis Logika)</b>. Perubahan di sini akan otomatis memperbarui kalkulasi algoritma seketika.
+    </div>
+    ''', unsafe_allow_html=True)
+    
+    st.markdown('''
+    <div class="closing-panel">
+        <div class="closing-title">Membawa Inovasi Menuju "Smart City"</div>
+        <p style="font-size: 1.1rem; line-height: 1.8; text-align: justify;">
+            <strong>INTELTRAFF</strong> bukan sekadar sistem pengatur lampu lalu lintas biasa. Gagasan ini lahir dari kebutuhan mendesak untuk menghadirkan keadilan dan efisiensi di persimpangan jalan raya. Dengan memadukan potensi teknologi <i>Vision AI</i> (Pemrosesan Citra) dan algoritma <i>Fuzzy Logic</i>, kami menawarkan transisi dari sistem konvensional yang kaku menuju ekosistem <strong>Smart City</strong> yang dinamis dan adaptif.
+        </p>
+        <p style="font-size: 1.1rem; line-height: 1.8; text-align: justify; margin-top: 15px;">
+            Melalui pendekatan simulasi <i>Software-in-the-Loop</i> (SITL) pada purwarupa ini, kami berhasil membuktikan secara ilmiah bahwa kecerdasan buatan mampu menekan waktu tunggu antrean secara signifikan tanpa mengabaikan aspek keselamatan. Inovasi ini merupakan wujud komitmen nyata mahasiswa <strong>Institut Teknologi Sumatera (ITERA)</strong> untuk berkontribusi dalam mengurangi kemacetan, menekan emisi karbon dari gas buang kendaraan, serta mendukung penuh tercapainya <strong>SDG 9: Industri, Inovasi, dan Infrastruktur</strong>.
+        </p>
+    </div>
+    ''', unsafe_allow_html=True)
