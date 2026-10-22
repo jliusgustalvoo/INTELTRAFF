@@ -516,9 +516,10 @@ elif menu == "4. Perbandingan Kinerja":
 
 elif menu == "5. Pengaturan Sistem":
     try:
-        with open("Gemini_Generated_Image_ihrd8qihrd8qihrd_2.jfif", "rb") as f:
+        with open("Gemini_Generated_Image_ihrd8qihrd8qihrd.png", "rb") as f:
             data5 = f.read()
         b64_5 = base64.b64encode(data5).decode()
+        
         st.markdown(
             f"""
             <style>
@@ -571,7 +572,7 @@ elif menu == "5. Pengaturan Sistem":
             unsafe_allow_html=True
         )
     except FileNotFoundError:
-        st.error("⚠️ File gambar 'Gemini_Generated_Image_ihrd8qihrd8qihrd_2.jfif' tidak ditemukan.")
+        st.error("⚠️ File gambar 'Gemini_Generated_Image_ihrd8qihrd8qihrd.jpg' tidak ditemukan.")
 
     st.markdown('<h1 style="color: white; text-shadow: 0 2px 10px rgba(0,0,0,0.5);">⚙️ Konfigurasi Keselamatan & Visi</h1>', unsafe_allow_html=True)
     st.markdown('<p style="color: #94a3b8; font-size: 1.1rem; margin-bottom: 30px; border-bottom: 1px solid rgba(255,255,255,0.1); padding-bottom: 15px;">Pengaturan batas aman <i>(Safety Constraints)</i> untuk mencegah durasi lampu hijau yang terlalu singkat atau terlalu lama.</p>', unsafe_allow_html=True)
@@ -591,12 +592,12 @@ elif menu == "5. Pengaturan Sistem":
     
     st.markdown('''
     <div class="closing-panel">
-        <div class="closing-title">Membawa Inovasi Menuju "Smart City"</div>
+        <div class="closing-title">Membawa Inovasi Menuju Ekosistem "Smart City"</div>
         <p style="font-size: 1.1rem; line-height: 1.8; text-align: justify;">
-            <strong>INTELTRAFF</strong> bukan sekadar sistem pengatur lampu lalu lintas biasa. Gagasan ini lahir dari kebutuhan mendesak untuk menghadirkan keadilan dan efisiensi di persimpangan jalan raya. Dengan memadukan potensi teknologi <i>Vision AI</i> (Pemrosesan Citra) dan algoritma <i>Fuzzy Logic</i>, kami menawarkan transisi dari sistem konvensional yang kaku menuju ekosistem <strong>Smart City</strong> yang dinamis dan adaptif.
+            <strong>INTELTRAFF</strong> bukan sekadar purwarupa pengatur lampu lalu lintas biasa. Gagasan ini lahir dari urgensi untuk menghadirkan keadilan dan efisiensi waktu di persimpangan jalan raya. Dengan memadukan potensi teknologi <i>Vision AI</i> (Pemrosesan Citra) dan algoritma <i>Fuzzy Logic</i>, kami menawarkan transisi dari sistem konvensional yang kaku menuju ekosistem <strong>Smart City</strong> yang dinamis dan adaptif.
         </p>
         <p style="font-size: 1.1rem; line-height: 1.8; text-align: justify; margin-top: 15px;">
-            Melalui pendekatan simulasi <i>Software-in-the-Loop</i> (SITL) pada purwarupa ini, kami berhasil membuktikan secara ilmiah bahwa kecerdasan buatan mampu menekan waktu tunggu antrean secara signifikan tanpa mengabaikan aspek keselamatan. Inovasi ini merupakan wujud komitmen nyata mahasiswa <strong>Institut Teknologi Sumatera (ITERA)</strong> untuk berkontribusi dalam mengurangi kemacetan, menekan emisi karbon dari gas buang kendaraan, serta mendukung penuh tercapainya <strong>SDG 9: Industri, Inovasi, dan Infrastruktur</strong>.
+            Melalui pendekatan simulasi <i>Software-in-the-Loop</i> (SITL) pada purwarupa web interaktif ini, kami membuktikan secara kuantitatif bahwa kecerdasan buatan mampu menekan total waktu tunggu antrean secara signifikan tanpa mengabaikan aspek keselamatan berkendara. Inovasi ini merupakan wujud nyata komitmen mahasiswa <strong>Institut Teknologi Sumatera (ITERA)</strong> untuk berkontribusi dalam mengurai kemacetan, mereduksi emisi karbon gas buang akibat idel kendaraan, serta mendukung tercapainya <strong>SDG 9: Industri, Inovasi, dan Infrastruktur</strong>.
         </p>
     </div>
     ''', unsafe_allow_html=True)
