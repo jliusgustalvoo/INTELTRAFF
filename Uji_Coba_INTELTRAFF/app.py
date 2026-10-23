@@ -297,7 +297,7 @@ elif menu == "4. Perbandingan Kinerja":
         ''', unsafe_allow_html=True)
 
 elif menu == "5. Pengaturan Sistem":
-    set_background("Gemini_Generated_Image_ihrd8qihrd8qihrd.jpg", 0.8)
+    set_background("converted.jpg", 0.8)
     
     st.markdown('<h2 style="color:white;">⚙️ Konfigurasi Keselamatan & Visi</h2>', unsafe_allow_html=True)
     
