@@ -184,9 +184,13 @@ if menu == "1. Dashboard Utama":
                     st.info(f"🚦 **Siklus Cerdas Aktif!** Alur prioritas saat ini: **{urutan_teks}**")
                     
                     col_u_kosong, col_u, col_u_kosong2 = st.columns([1, 1.5, 1])
+                    with col_u_kosong:
+                        st.write("") # Memaksa Streamlit membersihkan bayangan (ghosting)
                     with col_u:
                         waktu_tampil = sisa_waktu if jalur_aktif == "UTARA" else waktu_hijau["UTARA"]
                         st.markdown(render_card("Jalur Utara", jalur_aktif == "UTARA", waktu_tampil, st.session_state.utara), unsafe_allow_html=True)
+                    with col_u_kosong2:
+                        st.write("") # Memaksa Streamlit membersihkan bayangan (ghosting)
                         
                     col_b, col_tengah, col_t = st.columns([1.5, 0.5, 1.5])
                     with col_b:
@@ -199,9 +203,13 @@ if menu == "1. Dashboard Utama":
                         st.markdown(render_card("Jalur Timur", jalur_aktif == "TIMUR", waktu_tampil, st.session_state.timur), unsafe_allow_html=True)
 
                     col_s_kosong, col_s, col_s_kosong2 = st.columns([1, 1.5, 1])
+                    with col_s_kosong:
+                        st.write("")
                     with col_s:
                         waktu_tampil = sisa_waktu if jalur_aktif == "SELATAN" else waktu_hijau["SELATAN"]
                         st.markdown(render_card("Jalur Selatan", jalur_aktif == "SELATAN", waktu_tampil, st.session_state.selatan), unsafe_allow_html=True)
+                    with col_s_kosong2:
+                        st.write("")
                 time.sleep(1) # Berhenti 1 detik untuk membuat efek hitung mundur nyata
                 
         st.success(f"✅ 1 Siklus Selesai! Urutan eksekusi: {urutan_teks}. Sistem terbukti memprioritaskan antrean terpanjang.")
@@ -209,13 +217,19 @@ if menu == "1. Dashboard Utama":
         # Tampilan Statis sebelum tombol play ditekan
         with layar_utama.container():
             col_u_kosong, col_u, col_u_kosong2 = st.columns([1, 1.5, 1])
+            with col_u_kosong: st.write("")
             with col_u: st.markdown(render_card("Jalur Utara", jalur_prioritas == "UTARA", waktu_hijau["UTARA"], st.session_state.utara), unsafe_allow_html=True)
+            with col_u_kosong2: st.write("")
+            
             col_b, col_tengah, col_t = st.columns([1.5, 0.5, 1.5])
             with col_b: st.markdown(render_card("Jalur Barat", jalur_prioritas == "BARAT", waktu_hijau["BARAT"], st.session_state.barat), unsafe_allow_html=True)
             with col_tengah: st.markdown('<div style="text-align:center; padding-top:80px; opacity: 0.3;"><h1 style="font-size: 5rem; color:white;">+</h1></div>', unsafe_allow_html=True)
             with col_t: st.markdown(render_card("Jalur Timur", jalur_prioritas == "TIMUR", waktu_hijau["TIMUR"], st.session_state.timur), unsafe_allow_html=True)
+            
             col_s_kosong, col_s, col_s_kosong2 = st.columns([1, 1.5, 1])
+            with col_s_kosong: st.write("")
             with col_s: st.markdown(render_card("Jalur Selatan", jalur_prioritas == "SELATAN", waktu_hijau["SELATAN"], st.session_state.selatan), unsafe_allow_html=True)
+            with col_s_kosong2: st.write("")
 
 elif menu == "2. Panel Input Kamera":
     set_background("Gemini_Generated_Image_c7d3v3c7d3v3c7d3.jfif", 0.6)
