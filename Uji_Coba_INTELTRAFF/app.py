@@ -81,6 +81,13 @@ if 'barat' not in st.session_state: st.session_state.barat = 25
 if 'min_hijau' not in st.session_state: st.session_state.min_hijau = 15
 if 'max_hijau' not in st.session_state: st.session_state.max_hijau = 60
 
+# Tambahan Memori State untuk Tombol Kontrol Simulasi Play/Pause/Stop/Reset
+if 'sim_state' not in st.session_state: st.session_state.sim_state = 'STOPPED'
+if 'sim_jalur_idx' not in st.session_state: st.session_state.sim_jalur_idx = 0
+if 'sim_sisa_waktu' not in st.session_state: st.session_state.sim_sisa_waktu = 0
+if 'sim_urutan' not in st.session_state: st.session_state.sim_urutan = []
+if 'sim_finished' not in st.session_state: st.session_state.sim_finished = False
+
 # Fungsi untuk menghitung logika fuzzy buatan (TDS)
 def hitung_tds_dan_waktu(u, s, t, b, min_h, max_h):
     total = max(u + s + t + b, 1) # Cegah error bagi 0
@@ -147,10 +154,44 @@ if menu == "1. Dashboard Utama":
     st.markdown('<h1 style="text-align: center; color: white; font-weight: 900; letter-spacing: 2px;">🌍 INTELTRAFF CORE</h1>', unsafe_allow_html=True)
     st.markdown('<p style="text-align: center; color: #38bdf8; font-weight: 600;">Live AI Traffic Density Control Center</p>', unsafe_allow_html=True)
     
-    # Tombol Jalankan Simulasi
-    col_btn1, col_btn2, col_btn3 = st.columns([1, 1.5, 1])
+    # --- FUNGSI AKSI TOMBOL ---
+    def play_sim():
+        if st.session_state.sim_state == 'STOPPED':
+            # Atur ulang jika ditekan dari kondisi stop
+            st.session_state.sim_urutan = sorted(data_jalur.keys(), key=lambda k: data_jalur[k]['tds'], reverse=True)
+            st.session_state.sim_jalur_idx = 0
+            st.session_state.sim_sisa_waktu = waktu_hijau[st.session_state.sim_urutan[0]]
+            st.session_state.sim_finished = False
+        st.session_state.sim_state = 'RUNNING'
+
+    def pause_resume_sim():
+        if st.session_state.sim_state == 'RUNNING':
+            st.session_state.sim_state = 'PAUSED'
+        elif st.session_state.sim_state == 'PAUSED':
+            st.session_state.sim_state = 'RUNNING'
+
+    def reset_sim():
+        st.session_state.sim_urutan = sorted(data_jalur.keys(), key=lambda k: data_jalur[k]['tds'], reverse=True)
+        st.session_state.sim_jalur_idx = 0
+        st.session_state.sim_sisa_waktu = waktu_hijau[st.session_state.sim_urutan[0]]
+        st.session_state.sim_state = 'RUNNING'
+        st.session_state.sim_finished = False
+
+    def stop_sim():
+        st.session_state.sim_state = 'STOPPED'
+        st.session_state.sim_finished = False
+
+    # --- DESAIN TOMBOL KONTROL KINERJA ---
+    col_btn1, col_btn2, col_btn3, col_btn4 = st.columns(4)
+    with col_btn1:
+        st.button("▶ PLAY", use_container_width=True, type="primary", on_click=play_sim, disabled=(st.session_state.sim_state == 'RUNNING'))
     with col_btn2:
-        mulai_simulasi = st.button("▶ JALANKAN SIKLUS SIMULASI (LIVE TIMER)", use_container_width=True, type="primary")
+        label_pause = "▶ RESUME" if st.session_state.sim_state == 'PAUSED' else "⏸ PAUSE"
+        st.button(label_pause, use_container_width=True, on_click=pause_resume_sim, disabled=(st.session_state.sim_state == 'STOPPED'))
+    with col_btn3:
+        st.button("🔄 RESET", use_container_width=True, on_click=reset_sim, disabled=(st.session_state.sim_state == 'STOPPED'))
+    with col_btn4:
+        st.button("⏹ STOP", use_container_width=True, on_click=stop_sim, disabled=(st.session_state.sim_state == 'STOPPED'))
         
     st.markdown('<div style="height: 15px;"></div>', unsafe_allow_html=True)
 
@@ -169,53 +210,69 @@ if menu == "1. Dashboard Utama":
         
     layar_utama = st.empty()
 
-    if mulai_simulasi:
-        # URUTAN CERDAS: Diurutkan secara dinamis dari TDS tertinggi ke terendah
-        urutan_siklus = sorted(data_jalur.keys(), key=lambda k: data_jalur[k]['tds'], reverse=True)
+    # LOGIKA STATE MACHINE SIMULASI (MENGGANTIKAN LOOP LAMA)
+    if st.session_state.sim_state in ['RUNNING', 'PAUSED']:
+        urutan_siklus = st.session_state.sim_urutan
+        idx = st.session_state.sim_jalur_idx
+        jalur_aktif = urutan_siklus[idx]
+        sisa_waktu = st.session_state.sim_sisa_waktu
         urutan_teks = " ➡️ ".join([f"{j}" for j in urutan_siklus])
         
-        # Eksekusi putaran lampu hijau per jalur
-        for jalur_aktif in urutan_siklus:
-            durasi_hijau = waktu_hijau[jalur_aktif]
-            
-            # Animasi Live Timer Mundur
-            for sisa_waktu in range(durasi_hijau, -1, -1):
-                with layar_utama.container():
-                    st.info(f"🚦 **Siklus Cerdas Aktif!** Alur prioritas saat ini: **{urutan_teks}**")
-                    
-                    col_u_kosong, col_u, col_u_kosong2 = st.columns([1, 1.5, 1])
-                    with col_u_kosong:
-                        st.write("") # Memaksa Streamlit membersihkan bayangan (ghosting)
-                    with col_u:
-                        waktu_tampil = sisa_waktu if jalur_aktif == "UTARA" else waktu_hijau["UTARA"]
-                        st.markdown(render_card("Jalur Utara", jalur_aktif == "UTARA", waktu_tampil, st.session_state.utara), unsafe_allow_html=True)
-                    with col_u_kosong2:
-                        st.write("") # Memaksa Streamlit membersihkan bayangan (ghosting)
-                        
-                    col_b, col_tengah, col_t = st.columns([1.5, 0.5, 1.5])
-                    with col_b:
-                        waktu_tampil = sisa_waktu if jalur_aktif == "BARAT" else waktu_hijau["BARAT"]
-                        st.markdown(render_card("Jalur Barat", jalur_aktif == "BARAT", waktu_tampil, st.session_state.barat), unsafe_allow_html=True)
-                    with col_tengah:
-                        st.markdown('<div style="text-align:center; padding-top:80px; opacity: 0.3;"><h1 style="font-size: 5rem; color:white;">+</h1></div>', unsafe_allow_html=True)
-                    with col_t:
-                        waktu_tampil = sisa_waktu if jalur_aktif == "TIMUR" else waktu_hijau["TIMUR"]
-                        st.markdown(render_card("Jalur Timur", jalur_aktif == "TIMUR", waktu_tampil, st.session_state.timur), unsafe_allow_html=True)
-
-                    col_s_kosong, col_s, col_s_kosong2 = st.columns([1, 1.5, 1])
-                    with col_s_kosong:
-                        st.write("")
-                    with col_s:
-                        waktu_tampil = sisa_waktu if jalur_aktif == "SELATAN" else waktu_hijau["SELATAN"]
-                        st.markdown(render_card("Jalur Selatan", jalur_aktif == "SELATAN", waktu_tampil, st.session_state.selatan), unsafe_allow_html=True)
-                    with col_s_kosong2:
-                        st.write("")
-                time.sleep(1) # Berhenti 1 detik untuk membuat efek hitung mundur nyata
-                
-        st.success(f"✅ 1 Siklus Selesai! Urutan eksekusi: {urutan_teks}. Sistem terbukti memprioritaskan antrean terpanjang.")
-    else:
-        # Tampilan Statis sebelum tombol play ditekan
         with layar_utama.container():
+            if st.session_state.sim_state == 'PAUSED':
+                st.warning(f"⏸ **Siklus Dijeda!** Alur prioritas saat ini: **{urutan_teks}**")
+            else:
+                st.info(f"🚦 **Siklus Cerdas Aktif!** Alur prioritas saat ini: **{urutan_teks}**")
+                
+            col_u_kosong, col_u, col_u_kosong2 = st.columns([1, 1.5, 1])
+            with col_u_kosong: st.write("")
+            with col_u:
+                waktu_tampil = sisa_waktu if jalur_aktif == "UTARA" else waktu_hijau["UTARA"]
+                st.markdown(render_card("Jalur Utara", jalur_aktif == "UTARA", waktu_tampil, st.session_state.utara), unsafe_allow_html=True)
+            with col_u_kosong2: st.write("")
+                
+            col_b, col_tengah, col_t = st.columns([1.5, 0.5, 1.5])
+            with col_b:
+                waktu_tampil = sisa_waktu if jalur_aktif == "BARAT" else waktu_hijau["BARAT"]
+                st.markdown(render_card("Jalur Barat", jalur_aktif == "BARAT", waktu_tampil, st.session_state.barat), unsafe_allow_html=True)
+            with col_tengah:
+                st.markdown('<div style="text-align:center; padding-top:80px; opacity: 0.3;"><h1 style="font-size: 5rem; color:white;">+</h1></div>', unsafe_allow_html=True)
+            with col_t:
+                waktu_tampil = sisa_waktu if jalur_aktif == "TIMUR" else waktu_hijau["TIMUR"]
+                st.markdown(render_card("Jalur Timur", jalur_aktif == "TIMUR", waktu_tampil, st.session_state.timur), unsafe_allow_html=True)
+
+            col_s_kosong, col_s, col_s_kosong2 = st.columns([1, 1.5, 1])
+            with col_s_kosong: st.write("")
+            with col_s:
+                waktu_tampil = sisa_waktu if jalur_aktif == "SELATAN" else waktu_hijau["SELATAN"]
+                st.markdown(render_card("Jalur Selatan", jalur_aktif == "SELATAN", waktu_tampil, st.session_state.selatan), unsafe_allow_html=True)
+            with col_s_kosong2: st.write("")
+            
+        # Hitung Mundur Otomatis
+        if st.session_state.sim_state == 'RUNNING':
+            time.sleep(1) # Jeda animasi 1 detik
+            if sisa_waktu > 0:
+                st.session_state.sim_sisa_waktu -= 1
+                st.rerun() # Refresh layar
+            else:
+                # Pindah ke jalur selanjutnya
+                if idx < len(urutan_siklus) - 1:
+                    st.session_state.sim_jalur_idx += 1
+                    st.session_state.sim_sisa_waktu = waktu_hijau[urutan_siklus[st.session_state.sim_jalur_idx]]
+                    st.rerun()
+                else:
+                    # Simulasi Berakhir
+                    st.session_state.sim_state = 'STOPPED'
+                    st.session_state.sim_finished = True
+                    st.rerun()
+                    
+    else: # Saat State = STOPPED
+        # Tampilan Statis sebelum tombol ditekan
+        with layar_utama.container():
+            if st.session_state.sim_finished:
+                urutan_teks = " ➡️ ".join([f"{j}" for j in st.session_state.sim_urutan])
+                st.success(f"✅ 1 Siklus Selesai! Urutan eksekusi: {urutan_teks}. Sistem terbukti memprioritaskan antrean terpanjang.")
+            
             col_u_kosong, col_u, col_u_kosong2 = st.columns([1, 1.5, 1])
             with col_u_kosong: st.write("")
             with col_u: st.markdown(render_card("Jalur Utara", jalur_prioritas == "UTARA", waktu_hijau["UTARA"], st.session_state.utara), unsafe_allow_html=True)
