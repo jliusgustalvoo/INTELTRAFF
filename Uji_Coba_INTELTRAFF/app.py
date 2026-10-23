@@ -112,7 +112,7 @@ def hitung_tds_dan_waktu(u, s, t, b, min_h, max_h):
         
     return data, prioritas, waktu
 
-# Hitung data saat ini berdasarkan memori (Tanda kurung tutup ditambahkan di sini)
+# Hitung data saat ini berdasarkan memori
 data_jalur, jalur_prioritas, waktu_hijau = hitung_tds_dan_waktu(
     st.session_state.utara, st.session_state.selatan, 
     st.session_state.timur, st.session_state.barat,
@@ -121,7 +121,11 @@ data_jalur, jalur_prioritas, waktu_hijau = hitung_tds_dan_waktu(
 
 def set_background(image_file, opacity=0.85):
     try:
-        with open(image_file, "rb") as f:
+        # PERBAIKAN PATH: Mencari tahu posisi folder secara otomatis
+        current_dir = os.path.dirname(os.path.abspath(__file__))
+        file_path = os.path.join(current_dir, image_file)
+        
+        with open(file_path, "rb") as f:
             data = f.read()
         b64 = base64.b64encode(data).decode()
         st.markdown(
@@ -147,7 +151,7 @@ menu = st.sidebar.radio("Pilih Layar (Screen):", [
     "5. Pengaturan Sistem"
 ])
 st.sidebar.divider()
-st.sidebar.caption("INTELTRAFF")
+st.sidebar.caption("Simulasi PKM-KC / LITERA 2026")
 
 if menu == "1. Dashboard Utama":
     set_background("Gemini_Generated_Image_208wzs208wzs208w.jfif", 0.7)
@@ -211,7 +215,7 @@ if menu == "1. Dashboard Utama":
         
     layar_utama = st.empty()
 
-    # LOGIKA STATE MACHINE SIMULASI (MENGGANTIKAN LOOP LAMA)
+    # LOGIKA STATE MACHINE SIMULASI
     if st.session_state.sim_state in ['RUNNING', 'PAUSED']:
         urutan_siklus = st.session_state.sim_urutan
         idx = st.session_state.sim_jalur_idx
@@ -354,26 +358,20 @@ elif menu == "4. Perbandingan Kinerja":
     
     col1, col2 = st.columns([2, 1])
     with col1:
-        # Membuat Grafik Plotly yang lebih interaktif dan profesional
         fig = go.Figure(data=[
             go.Bar(name='Siklus Konvensional (Statis)', 
                    x=df_chart['Jalur'], y=df_chart['Konvensional (Statis)'], 
-                   marker_color='rgba(100, 116, 139, 0.6)', # Abu-abu kebiruan transparan
-                   marker_line_color='#94a3b8', marker_line_width=1.5,
+                   marker_color='rgba(100, 116, 139, 0.6)', marker_line_color='#94a3b8', marker_line_width=1.5,
                    text=df_chart['Konvensional (Statis)'], textposition='auto'),
                    
             go.Bar(name='INTELTRAFF (Adaptif)', 
                    x=df_chart['Jalur'], y=df_chart['INTELTRAFF (Adaptif)'], 
-                   marker_color='rgba(16, 185, 129, 0.8)', # Hijau emerald transparan
-                   marker_line_color='#10b981', marker_line_width=2,
+                   marker_color='rgba(16, 185, 129, 0.8)', marker_line_color='#10b981', marker_line_width=2,
                    text=df_chart['INTELTRAFF (Adaptif)'], textposition='auto')
         ])
         
-        # Desain layout grafik (background transparan, grid halus, dll)
         fig.update_layout(
-            barmode='group',
-            paper_bgcolor='rgba(0,0,0,0)',
-            plot_bgcolor='rgba(0,0,0,0)',
+            barmode='group', paper_bgcolor='rgba(0,0,0,0)', plot_bgcolor='rgba(0,0,0,0)',
             font=dict(color='#cbd5e1', family="Arial"),
             legend=dict(orientation="h", yanchor="bottom", y=1.05, xanchor="center", x=0.5),
             margin=dict(l=0, r=0, t=50, b=0),
@@ -398,7 +396,7 @@ elif menu == "4. Perbandingan Kinerja":
         ''', unsafe_allow_html=True)
 
 elif menu == "5. Pengaturan Sistem":
-    set_background("converted.jpg", 0.8)
+    set_background("Gemini_Generated_Image_ihrd8qihrd8qihrd_2.jpg", 0.8)
     
     st.markdown('<h2 style="color:white;">⚙️ Konfigurasi Keselamatan & Visi</h2>', unsafe_allow_html=True)
     
