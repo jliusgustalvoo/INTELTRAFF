@@ -3,6 +3,7 @@ import pandas as pd
 import base64
 import os
 import time
+import plotly.graph_objects as go
 
 # Konfigurasi Halaman Dasar
 st.set_page_config(page_title="INTELTRAFF - 5 Screen", page_icon="🚦", layout="wide")
@@ -146,7 +147,7 @@ menu = st.sidebar.radio("Pilih Layar (Screen):", [
     "5. Pengaturan Sistem"
 ])
 st.sidebar.divider()
-st.sidebar.caption("Simulasi PKM-KC / LITERA 2026")
+st.sidebar.caption("INTELTRAFF")
 
 if menu == "1. Dashboard Utama":
     set_background("Gemini_Generated_Image_208wzs208wzs208w.jfif", 0.7)
@@ -353,7 +354,36 @@ elif menu == "4. Perbandingan Kinerja":
     
     col1, col2 = st.columns([2, 1])
     with col1:
-        st.bar_chart(df_chart.set_index("Jalur"), color=["#64748b", "#10b981"])
+        # Membuat Grafik Plotly yang lebih interaktif dan profesional
+        fig = go.Figure(data=[
+            go.Bar(name='Siklus Konvensional (Statis)', 
+                   x=df_chart['Jalur'], y=df_chart['Konvensional (Statis)'], 
+                   marker_color='rgba(100, 116, 139, 0.6)', # Abu-abu kebiruan transparan
+                   marker_line_color='#94a3b8', marker_line_width=1.5,
+                   text=df_chart['Konvensional (Statis)'], textposition='auto'),
+                   
+            go.Bar(name='INTELTRAFF (Adaptif)', 
+                   x=df_chart['Jalur'], y=df_chart['INTELTRAFF (Adaptif)'], 
+                   marker_color='rgba(16, 185, 129, 0.8)', # Hijau emerald transparan
+                   marker_line_color='#10b981', marker_line_width=2,
+                   text=df_chart['INTELTRAFF (Adaptif)'], textposition='auto')
+        ])
+        
+        # Desain layout grafik (background transparan, grid halus, dll)
+        fig.update_layout(
+            barmode='group',
+            paper_bgcolor='rgba(0,0,0,0)',
+            plot_bgcolor='rgba(0,0,0,0)',
+            font=dict(color='#cbd5e1', family="Arial"),
+            legend=dict(orientation="h", yanchor="bottom", y=1.05, xanchor="center", x=0.5),
+            margin=dict(l=0, r=0, t=50, b=0),
+            xaxis=dict(showgrid=False, title="Jalur Persimpangan", title_font=dict(color='#38bdf8')),
+            yaxis=dict(showgrid=True, gridcolor='rgba(255,255,255,0.1)', title="Durasi Hijau (Detik)"),
+            hovermode="x unified"
+        )
+        
+        st.plotly_chart(fig, use_container_width=True)
+        
     with col2:
         st.markdown(f'''
         <div class="glass-card">
