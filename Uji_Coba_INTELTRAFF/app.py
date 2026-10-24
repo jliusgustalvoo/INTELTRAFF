@@ -151,7 +151,7 @@ menu = st.sidebar.radio("Pilih Layar (Screen):", [
     "5. Pengaturan Sistem"
 ])
 st.sidebar.divider()
-st.sidebar.caption("Simulasi PKM-KC / LITERA 2026")
+st.sidebar.caption("INTELTRAFF 2026")
 
 if menu == "1. Dashboard Utama":
     set_background("Gemini_Generated_Image_208wzs208wzs208w.jfif", 0.7)
